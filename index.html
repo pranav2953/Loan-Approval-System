@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Loan Predictor - My ML Project</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '🤖';
+            font-size: 3em;
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .subtitle {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .subtitle h3 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .subtitle p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-section {
+            padding: 40px 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 14px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        .submit-section {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 2px dashed #e1e8ed;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px) scale(1);
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .approved {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border-left: 5px solid #1e8449;
+        }
+
+        .rejected {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border-left: 5px solid #922b21;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-top: 3px solid #667eea;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .info-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .form-section {
+                padding: 25px 20px;
+            }
+
+            .header {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        /* Fun loading effect for inputs */
+        .form-group input:valid {
+            border-color: #27ae60;
+        }
+
+        .form-group input:invalid {
+            border-color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Smart Loan Predictor</h1>
+            <p>Machine Learning Powered Loan Approval System</p>
+        </div>
+
+        <div class="subtitle">
+            <h3>💡 AI-Based Decision Making</h3>
+            <p>Built with Python, Flask & Scikit-learn | Computer Science Final Project</p>
+        </div>
+
+        <div class="form-section">
+            <form action="/predict" method="POST">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="gender">👤 Gender</label>
+                        <select name="gender" id="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="1">Male</option>
+                            <option value="0">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="married">💑 Marital Status</label>
+                        <select name="married" id="married" required>
+                            <option value="">Select Status</option>
+                            <option value="1">Married</option>
+                            <option value="0">Single</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="education">🎓 Education</label>
+                        <select name="education" id="education" required>
+                            <option value="">Select Education</option>
+                            <option value="1">Graduate</option>
+                            <option value="0">Not Graduate</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="self_employed">💼 Employment Type</label>
+                        <select name="self_employed" id="self_employed" required>
+                            <option value="">Select Type</option>
+                            <option value="1">Self Employed</option>
+                            <option value="0">Salaried</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="applicantincome">💰 Applicant Income (₹)</label>
+                        <input type="number" name="applicantincome" id="applicantincome"
+                               placeholder="e.g., 50000" min="0" step="1000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="coapplicantincome">👥 Co-applicant Income (₹)</label>
+                        <input type="number" name="coapplicantincome" id="coapplicantincome"
+                               placeholder="e.g., 30000" min="0" step="1000" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loanamount">🏠 Loan Amount (₹ in thousands)</label>
+                        <input type="number" name="loanamount" id="loanamount"
+                               placeholder="e.g., 150 (for ₹1.5L)" min="1" step="10" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loan_amount_term">⏰ Loan Term (Months)</label>
+                        <input type="number" name="loan_amount_term" id="loan_amount_term"
+                               placeholder="e.g., 360 (30 years)" min="12" max="480" step="12" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="credit_history">📊 Credit History</label>
+                        <select name="credit_history" id="credit_history" required>
+                            <option value="">Select Credit History</option>
+                            <option value="1">Good Credit History</option>
+                            <option value="0">Poor/No Credit History</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="property_area">🏘️ Property Area</label>
+                        <select name="property_area" id="property_area" required>
+                            <option value="">Select Area Type</option>
+                            <option value="2">Urban</option>
+                            <option value="1">Semi Urban</option>
+                            <option value="0">Rural</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn">
+                        🔮 Predict Loan Status
+                    </button>
+                </div>
+            </form>
+
+            {% if prediction %}
+            <div class="result-section {{ 'approved' if '✅' in prediction else 'rejected' }}">
+                <h2>🎯 Prediction Result</h2>
+                <div style="margin-top: 15px; font-size: 24px;">
+                    {{ prediction }}
+                </div>
+                {% if '✅' in prediction %}
+                <p style="margin-top: 10px; font-size: 16px; opacity: 0.9;">
+                    🎉 Congratulations! The ML model predicts your loan will be approved!
+                </p>
+                {% else %}
+                <p style="margin-top: 10px; font-size: 16px; opacity: 0.9;">
+                    😔 The model suggests your loan may not be approved. Consider improving your profile.
+                </p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="info-section">
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>🤖 How It Works</h4>
+                    <p>This system uses a trained Machine Learning model that analyzes 10 key factors to predict loan approval with high accuracy.</p>
+                </div>
+                <div class="info-card">
+                    <h4>📈 Model Performance</h4>
+                    <p>Our model has been trained on historical loan data and uses advanced algorithms to make predictions.</p>
+                </div>
+            </div>
+
+            <div class="info-card" style="text-align: center;">
+                <h4>⚠️ Important Note</h4>
+                <p style="color: #e74c3c; font-weight: 600;">
+                    This is a prediction tool for educational purposes only. Actual loan approval depends on bank policies and additional factors not captured in this model.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎓 Built with Python Flask & Machine Learning |
+               <a href="https://github.com" target="_blank">View Code on GitHub</a> |
+               CS Project 2024 ❤️</p>
+        </div>
+    </div>
+</body>
+</html>
+
